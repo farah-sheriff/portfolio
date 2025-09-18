@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles and animations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Particle canvas styling */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        /* Section styling */
+        section {
+            position: relative;
+            padding: 5rem 1rem;
+        }
+        
+        /* Dark mode styles */
+        .dark {
+            background-color: #111827;
+            color: #f3f4f6;
+        }
+        
+        .light {
+            background-color: #f9fafb;
+            color: #111827;
+        }
+        
+        /* Card hover effects */
+        .project-card {
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Progress bar animation */
+        .progress-bar {
+            transition: width 2s ease-in-out;
+        }
+        
+        /* Timeline styling */
+        .timeline-item {
+            border-left: 3px solid #3b82f6;
+            padding-left: 2rem;
+            padding-bottom: 3rem;
+            position: relative;
+        }
+        
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+        }
+        
+        /* Modal styling */
+        .modal {
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .dark ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            section {
+                padding: 3rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="light">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 py-4 px-6 bg-white dark:bg-gray-900 shadow-md transition-all duration-300">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-blue-600">FS</a>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Home</a>
+                <a href="#about" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">About</a>
+                <a href="#skills" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Skills</a>
+                <a href="#projects" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Projects</a>
+                <a href="#experience" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Experience</a>
+                <a href="#achievements" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Achievements</a>
+                <a href="#contact" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Contact</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- Dark mode toggle -->
+                <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                    <i class="fas fa-moon text-gray-700 dark:text-yellow-400"></i>
+                </button>
+                
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                    <i class="fas fa-bars text-gray-700 dark:text-white"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 py-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
+            <div class="flex flex-col space-y-3 px-4">
+                <a href="#home" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Home</a>
+                <a href="#about" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">About</a>
+                <a href="#skills" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Skills</a>
+                <a href="#projects" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Projects</a>
+                <a href="#experience" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Experience</a>
+                <a href="#achievements" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Achievements</a>
+                <a href="#contact" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div id="particles-js" class="absolute inset-0"></div>
+        
+        <div class="container mx-auto px-4 z-10 text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">Farah Sherif</h1>
+            <p class="text-xl md:text-2xl mb-10 text-gray-600 dark:text-gray-300 animate-fade-in" style="animation-delay: 0.2s;">
+                Computer Science Student | Future Mobile App Developer | Innovator
+            </p>
+            <button class="px-8 py-3 bg-blue-600 text-white rounded-full font-semibold text-lg hover:bg-blue-700 transition-colors animate-fade-in" style="animation-delay: 0.4s;">
+                View My Work
+            </button>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fas fa-chevron-down text-gray-600 dark:text-gray-300 text-2xl"></i>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 light dark:dark">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">About Me</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="animate-float">
+                    <div class="bg-blue-100 dark:bg-blue-900 p-6 rounded-2xl shadow-lg">
+                        <p class="text-lg mb-4">
+                            I'm a passionate Computer Science student at Nahda University with a focus on Mobile App Development.
+                        </p>
+                        <p class="text-lg">
+                           Active HR team member at IEEE, supporting coordination and student engagement. Highly organized, skilled at managing multiple projects, and meeting tight deadlines while ensuring top-quality results.
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">Education Timeline</h3>
+                    
+                    <div class="space-y-8">
+                        <div class="timeline-item">
+                            <h4 class="text-xl font-semibold">Nahda University</h4>
+                            <p class="text-blue-600 dark:text-blue-400"> Will be Graduated in 2027</p>
+                            <p class="text-gray-600 dark:text-gray-400">2023 - 2027</p>
+                            <p class="mt-2">GPA: 3.15/4.0, Specializing in Mobile App Development</p>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <h4 class="text-xl font-semibold">DEPI training scholarship</h4>
+                            <p class="text-blue-600 dark:text-blue-400">Mobile App Development</p>
+                            <p class="text-gray-600 dark:text-gray-400">Summer 2025</p>
+                            <p class="mt-2">Intensive 24-week program focused on Mobile App development</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-gray-100 dark:bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Technical Skills</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Programming Languages -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">Programming Languages</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">Python</span>
+                                <span class="text-blue-600 dark:text-blue-400">90%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">JavaScript</span>
+                                <span class="text-blue-600 dark:text-blue-400">85%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">Java</span>
+                                <span class="text-blue-600 dark:text-blue-400">80%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">C++</span>
+                                <span class="text-blue-600 dark:text-blue-400">75%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Technologies & Frameworks -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">Technologies & Frameworks</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">Firebase</span>
+                                <span class="text-blue-600 dark:text-blue-400">88%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 88%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">Flutter</span>
+                                <span class="text-blue-600 dark:text-blue-400">82%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">TensorFlow</span>
+                                <span class="text-blue-600 dark:text-blue-400">78%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">GitHub</span>
+                                <span class="text-blue-600 dark:text-blue-400">85%</span>
+                            </div>
+                            <div class="h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+                                <div class="h-2 bg-blue-600 rounded-full progress-bar" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skill Icons -->
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <i class="fab fa-python text-4xl text-blue-600 mb-3"></i>
+                    <span class="font-medium">Python</span>
+                </div>
+                
+                <div class="flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <i class="fab fa-js-square text-4xl text-yellow-400 mb-3"></i>
+                    <span class="font-medium">JavaScript</span>
+                </div>
+                
+                <div class="flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <i class="fab fa-java text-4xl text-red-600 mb-3"></i>
+                    <span class="font-medium">Java</span>
+                </div>
+                
+                <div class="flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <i class="fab fa-react text-4xl text-blue-400 mb-3"></i>
+                    <span class="font-medium">React</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 light dark:dark">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Featured Projects</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="project-card bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-lg">
+                    <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-6xl"></i>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">AI-Powered Task Manager</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            An intelligent task manager that uses machine learning to prioritize tasks based on deadlines and importance.
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">Python</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">TensorFlow</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">React</span>
+                        </div>
+                        
+                        <button class="w-full py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Project 2 -->
+                <div class="project-card bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-lg">
+                    <div class="h-48 bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-6xl"></i>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Blockchain Voting System</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            A secure, transparent voting system built on blockchain technology to prevent fraud and ensure integrity.
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">Solidity</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">Web3.js</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">Ethereum</span>
+                        </div>
+                        
+                        <button class="w-full py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Project 3 -->
+                <div class="project-card bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-lg">
+                    <div class="h-48 bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center">
+                        <i class="fas fa-vr-cardboard text-white text-6xl"></i>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">VR Campus Tour</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            An immersive virtual reality experience that allows prospective students to explore campus from anywhere.
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">Unity</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">C#</span>
+                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">VR</span>
+                        </div>
+                        
+                        <button class="w-full py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <!-- Experience Section -->
+<section id="experience" class="py-20 bg-gray-100 dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Experience & Internships</h2>
+        
+        <div class="max-w-3xl mx-auto">
+            <!-- Experience 1 -->
+            <div class="mb-12">
+                <div class="flex items-start">
+                    <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-xl mr-6">
+                        <i class="fas fa-code text-3xl text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold">DEPI Internship</h3>
+                        <p class="text-blue-600 dark:text-blue-400">Summer training 2024</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">
+                            Worked on improving search algorithm efficiency and implemented new features for the search results page. Collaborated with a team of senior engineers to optimize backend processes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Experience 2 -->
+            <div class="mb-12">
+                <div class="flex items-start">
+                    <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-xl mr-6">
+                        <i class="fas fa-laptop-code text-3xl text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold">ICPC Contestent</h3>
+                        <p class="text-blue-600 dark:text-blue-400">Spring 2025</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">
+Through ICPC, I work on advanced algorithms and problem-solving techniques, and each competition teaches me resilience, strategy, and how to grow as a programmer.                            </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Experience 3 -->
+            <div>
+                <div class="flex items-start">
+                    <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-xl mr-6">
+                        <i class="fas fa-chalkboard-teacher text-3xl text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold">IEEE member at Nahda University</h3>
+                        <p class="text-blue-600 dark:text-blue-400">Nahda University • 2023 - Present</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">
+I contribute to student engagement, team coordination, and creating opportunities that help future engineers grow together.                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Contact Section -->
+<section id="contact" class="py-20 light dark:dark">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Get In Touch</h2>
+        
+        <div class="max-w-lg mx-auto">
+            <form class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium mb-2">Name</label>
+                    <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900">
+                </div>
+                
+                <div>
+                    <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                    <textarea id="message" rows="5" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900"></textarea>
+                </div>
+                
+                <button type="submit" class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Send Message
+                </button>
+            </form>
+            
+            <div class="mt-12 flex justify-center space-x-6">
+                <a href="https://www.linkedin.com/in/farah-sherif" target="_blank" class="text-2xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://github.com/farah-sheriff" target="_blank" class="text-2xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="text-2xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="text-2xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-gray-900 text-white text-center">
+        <p>© Farah Sherif. All rights reserved.</p>
+        <p class="mt-2 text-gray-400">Designed and built with ❤️</p>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark');
+                body.classList.toggle('light');
+                
+                // Update icon
+                const icon = themeToggle.querySelector('i');
+                if (body.classList.contains('dark')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+            
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Animate progress bars when they come into view
+            const progressBars = document.querySelectorAll('.progress-bar');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const width = entry.target.style.width;
+                        entry.target.style.width = '0';
+                        setTimeout(() => {
+                            entry.target.style.width = width;
+                        }, 100);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            progressBars.forEach(bar => {
+                observer.observe(bar);
+            });
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Particles.js for background animation -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particles.js
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 80, density: { enable: true, value_area: 800 } },
+                        color: { value: "#3b82f6" },
+                        shape: { type: "circle" },
+                        opacity: { value: 0.5, random: true },
+                        size: { value: 3, random: true },
+                        line_linked: {
+                            enable: true,
+                            distance: 150,
+                            color: "#3b82f6",
+                            opacity: 0.4,
+                            width: 1
+                        },
+                        move: {
+                            enable: true,
+                            speed: 2,
+                            direction: "none",
+                            random: true,
+                            straight: false,
+                            out_mode: "out",
+                            bounce: false
+                        }
+                    },
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: {
+                            onhover: { enable: true, mode: "grab" },
+                            onclick: { enable: true, mode: "push" },
+                            resize: true
+                        },
+                        modes: {
+                            grab: { distance: 140, line_linked: { opacity: 1 } },
+                            push: { particles_nb: 4 }
+                        }
+                    },
+                    retina_detect: true
+                });
+            }
+        });
+    </script>
+</body>
+</html>
